@@ -1,0 +1,10 @@
+name: ${name}
+version: ${epicmagics.version}
+author: EpicDark76
+api-version: 1.21
+main: eu.epicdark.epicmagics.EpicMagics
+
+commands:
+   magicstick:
+      description: Get a fancy stick
+      permission: epicmagics.cmd.magicstick
