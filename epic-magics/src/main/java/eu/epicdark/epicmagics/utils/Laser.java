@@ -1,15 +1,11 @@
 package eu.epicdark.epicmagics.utils;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display.Brightness;
 import org.bukkit.entity.Player;
@@ -154,7 +150,7 @@ public class Laser implements OrbitalLaser{
 					
 					world.spawnParticle(Particle.EXPLOSION_EMITTER, source, 40, 7, 7, 7, 0, null, true);
 					
-					sphereAround(source, power).forEach(block -> block.setType(Material.AIR));
+					BlockUtils.sphereAround(source, power).forEach(block -> block.setType(Material.AIR));
 					world.createExplosion(source, power*0.8f, true, true, player);
 					
 					remove();
@@ -168,21 +164,6 @@ public class Laser implements OrbitalLaser{
 		}.runTaskTimer(EpicMagics.INSTANCE, 0, 1);
 	}
 
-	public static Set<Block> sphereAround(Location location, int radius) {
-		Set<Block> sphere = new HashSet<Block>();
-		Block center = location.getBlock();
-		for (int x = -radius; x <= radius; x++) {
-			for (int y = -radius; y <= radius; y++) {
-				for (int z = -radius; z <= radius; z++) {
-					Block b = center.getRelative(x, y, z);
-					if (center.getLocation().distance(b.getLocation()) <= radius) {
-						sphere.add(b);
-					}
-				}
-
-			}
-		}
-		return sphere;
-	}
+	
 
 }
