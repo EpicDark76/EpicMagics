@@ -6,9 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import eu.epicdark.epicmagics.EpicMagics;
 import eu.epicdark.epicmagics.utils.Laser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -25,7 +23,7 @@ public class OrbitalStrikeSpell extends RangedMagicSpell {
 	}
 
 	@Override
-	protected boolean atTarget(Player player, Location location) {
+	protected boolean handle(Player player, Location location) {
 		World world = player.getWorld();
 		int highestY = world.getHighestBlockYAt(location);
 		int currentY = location.getBlockY();
@@ -36,16 +34,7 @@ public class OrbitalStrikeSpell extends RangedMagicSpell {
 		}
 		
 		location = location.toHighestLocation(HeightMap.MOTION_BLOCKING);
-		final Laser laser = new Laser(location);
-
-		new BukkitRunnable() {
-
-			@Override
-			public void run() {
-				laser.explode(player);
-			}
-		}.runTaskLater(EpicMagics.INSTANCE, Laser.interpolationDuration);
-
+		final Laser laser = new Laser(location, player);
 		return true;
 	}
 

@@ -42,6 +42,11 @@ public class ItemBuilder {
 		return this;
 	}
 	
+	public ItemBuilder maxStackSize(int size) {
+		this.meta.setMaxStackSize(size);
+		return this;
+	}
+	
 	public ItemStack build() {
 		this.item.setItemMeta(meta);
 		return this.item;

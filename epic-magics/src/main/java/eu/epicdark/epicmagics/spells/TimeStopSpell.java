@@ -31,16 +31,20 @@ public class TimeStopSpell extends MagicSpell{
 			if(!(entity instanceof LivingEntity)) {
 				continue;
 			}
-			AIs.put((LivingEntity) entity, ((LivingEntity)entity).hasAI());
-			((LivingEntity)entity).setAI(false);
+			LivingEntity lEntity = (LivingEntity) entity;
+			AIs.put(lEntity, lEntity.hasAI());
+			lEntity.setAI(false);
+			lEntity.setSilent(true);
 		}
 		
 		new BukkitRunnable() {
 			
 			@Override
 			public void run() {
+				player.getWorld().playSound(player.getLocation(), Sound.BLOCK_RESPAWN_ANCHOR_SET_SPAWN, castingCategory, 1, 0.5f);
 				for(LivingEntity entity : AIs.keySet()) {
 					entity.setAI(AIs.get(entity));
+					entity.setSilent(false);
 				}
 			}
 		}.runTaskLater(EpicMagics.INSTANCE, minutes(1));

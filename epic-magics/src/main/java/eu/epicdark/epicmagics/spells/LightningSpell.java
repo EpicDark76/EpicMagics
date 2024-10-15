@@ -12,7 +12,7 @@ public class LightningSpell extends RangedMagicSpell{
 	}
 
 	@Override
-	protected boolean atTarget(Player player, Location location) {
+	protected boolean handle(Player player, Location location) {
 		Block block = location.getBlock();
 		player.getWorld().strikeLightning(block.getLocation().toCenterLocation());
 		return true;

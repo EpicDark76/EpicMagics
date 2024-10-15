@@ -49,11 +49,11 @@ public class InteractListener implements Listener {
 
 		int cost = spell.getCost();
 		if(material.getAmount() < cost && player.getGameMode() != GameMode.CREATIVE) {
-			player.sendActionBar(Component.text("Not enough substenance!").color(NamedTextColor.RED));
+			player.sendActionBar(Component.text("Not enough substenance! (" + cost + " required)").color(NamedTextColor.RED));
 			return;
 		}
 		
-		if(player.hasCooldown(spell.getMaterial())) {
+		if(player.hasCooldown(spell.getMaterial()) && player.getGameMode() != GameMode.CREATIVE) {
 			player.sendActionBar(Component.text("Still on cooldown!").color(NamedTextColor.RED));
 			return;
 		}

@@ -25,9 +25,9 @@ public abstract class RangedMagicSpell extends MagicSpell{
 			player.sendActionBar(Component.text("Out of range!").color(NamedTextColor.RED));
 			return false;
 		}
-		return atTarget(player, result.getHitPosition().toLocation(player.getWorld()));
+		return handle(player, result.getHitPosition().toLocation(player.getWorld()));
 	}
 	
-	protected abstract boolean atTarget(Player player, Location target);
+	protected abstract boolean handle(Player player, Location target);
 
 }

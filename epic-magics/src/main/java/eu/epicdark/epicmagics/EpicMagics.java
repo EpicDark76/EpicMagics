@@ -2,6 +2,7 @@ package eu.epicdark.epicmagics;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,7 +21,7 @@ public class EpicMagics extends JavaPlugin{
 	public void onEnable() {
 		INSTANCE = this;
 		
-		MAGICSTICK = new ItemBuilder(Material.STICK).enchantmentGlint(true).itemName(Component.text("Zauberstab")).build();
+		MAGICSTICK = new ItemBuilder(Material.STICK).enchantmentGlint(true).itemName(Component.text("Zauberstab")).rarity(ItemRarity.EPIC).maxStackSize(1).build();
 		
 		registerListeners();
 		registerCommands();

@@ -21,7 +21,8 @@ public abstract class MagicSpell {
 									SHIELD = new ShieldSpell(),
 									CREEPER = new CreeperSpell(),
 									FIREBALL = new FireballSpell(),
-									WITHER_SKULL = new WitherskullSpell();
+									WITHER_SKULL = new WitherskullSpell(),
+									SKELETON = new SkeletonSpell();
 	
 	private final Material material;
 	private final int cost;

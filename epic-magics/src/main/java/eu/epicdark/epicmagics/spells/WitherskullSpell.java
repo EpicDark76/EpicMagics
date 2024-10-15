@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.WitherSkull;
 
 public class WitherskullSpell extends MagicSpell{
-
+	
 	public WitherskullSpell() {
 		super(Material.WITHER_SKELETON_SKULL, 1, minutes(1));
 	}
@@ -14,6 +14,10 @@ public class WitherskullSpell extends MagicSpell{
 	@Override
 	protected boolean handle(Player player) {
 		WitherSkull skull = player.launchProjectile(WitherSkull.class);
+		if(Math.random()<=0.1) { //10% chance skull is blue (charged)
+			skull.setCharged(true);
+			skull.setVelocity(skull.getVelocity().multiply(1.8D));
+		}
 		return true;
 	}
 	

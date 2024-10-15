@@ -20,12 +20,13 @@ import org.joml.Vector3f;
 
 import eu.epicdark.epicmagics.EpicMagics;
 
-public class Laser {
+public class Laser implements OrbitalLaser{
 	private static final float height = 1000f;
 	private static final int viewRange = 100; //this is not in blocks, but rather used in a formula
 	private static final int interpolationDelay = 5;
 	public static final int interpolationDuration = 20*4;
-	public static final int interpolationDurationExplosion = 4;
+	private static final int interpolationDurationExplosion = 4;
+	private static final int soundVolume = 9;
 	
 	private final Location target;
 
@@ -54,7 +55,7 @@ public class Laser {
 	private Transformation outerTrans = new Transformation(outerTranslation, leftRotation, outerScale, rightRotation);
 	private Transformation outerTrans2 = new Transformation(outerTranslation2, leftRotation, outerScale2, rightRotation);
 
-	public Laser(Location target) {
+	public Laser(Location target, Player cause) {
 		this.target = target;
 
 		this.inner = target.getWorld().spawn(target, BlockDisplay.class, bd -> {
@@ -72,12 +73,12 @@ public class Laser {
 			bd.setTransformation(outerTrans);
 		});
 		
-		this.target.getWorld().playSound(target, Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.MASTER, 10, 0.6f);
-		
+		this.target.getWorld().playSound(target, Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.MASTER, soundVolume, 0.6f);
 		new BukkitRunnable() {
 			
 			@Override
 			public void run() {
+				
 				inner.setInterpolationDelay(interpolationDelay);
 				inner.setInterpolationDuration(interpolationDuration);
 				inner.setTransformation(innerTrans2);
@@ -86,21 +87,37 @@ public class Laser {
 				outer.setInterpolationDelay(interpolationDelay);
 				outer.setInterpolationDuration(interpolationDuration);
 				outer.setTransformation(outerTrans2);
-				
 			}
 		}.runTaskLaterAsynchronously(EpicMagics.INSTANCE, 10);
+		
+		new BukkitRunnable() {
+			
+			@Override
+			public void run() {
+				target.getWorld().playSound(target, Sound.ENTITY_WARDEN_SONIC_CHARGE, SoundCategory.MASTER, soundVolume, 0.5f);
+			}
+		}.runTaskLater(EpicMagics.INSTANCE, 20);
+		new BukkitRunnable() {
+
+			@Override
+			public void run() {
+				explode(cause);
+			}
+		}.runTaskLater(EpicMagics.INSTANCE, interpolationDuration);
 	}
 	
+	@Override
 	public void remove() {
 		this.inner.remove();
 		this.outer.remove();
 	}
 
+	@Override
 	public void explode(Player player) {
 		Location source = target;
 		World world = source.getWorld();
 		final int power = 10;
-		world.playSound(target, Sound.BLOCK_BEACON_DEACTIVATE, SoundCategory.MASTER, 7, 0.6f);
+		world.playSound(target, Sound.BLOCK_BEACON_DEACTIVATE, SoundCategory.MASTER, soundVolume, 0.6f);
 		
 		this.inner.setInterpolationDelay(0);
 		this.inner.setInterpolationDuration(interpolationDurationExplosion);
@@ -112,19 +129,43 @@ public class Laser {
 		
 		new BukkitRunnable() {
 			
+			int tickTime = 0;
+			float initialScale = power*2f + 0.1f;
+			float scale = initialScale;
+			
 			@Override
 			public void run() {
-				world.playSound(source, Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.MASTER, 7, (int) 0.6);
-				//world.playSound(target, Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.MASTER, 7, 0.5f);
 				
-				world.spawnParticle(Particle.FLASH, source, 40, 5, 5, 5, 0, null, true);
-				world.spawnParticle(Particle.EXPLOSION_EMITTER, source, 10, 5, 5, 5, 0, null, true);
+				double density = 0.2;  // smaller numbers make the particles denser
+
+				for (double i=0; i < 2 * Math.PI ; i +=density) {
+				     double x = Math.cos(i) * scale + (Math.random()-0.5);
+				     double y = Math.sin(i) * scale + (Math.random()-0.5);
+
+				     Location loc = source.clone().add(x, 0.5, y);
+				     world.spawnParticle(Particle.ELECTRIC_SPARK, loc, 1, 0, 0, 0, 0, null, true);
+				}
 				
-				//world.createExplosion(source, 20, true, true, player);
-				sphereAround(source, power).forEach(block -> block.setType(Material.AIR));
-				remove();
+				if(tickTime >= interpolationDurationExplosion-1) {
+					Location soundSource = source.clone().add(0, 1, 0);
+					world.playSound(soundSource, Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.MASTER, soundVolume, (int) 0.6);
+					//world.playSound(soundSource, Sound.ITEM_TOTEM_USE, SoundCategory.MASTER, soundVolume, (int) 0.8);
+					//world.playSound(target, Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.MASTER, 7, 0.5f);
+					
+					world.spawnParticle(Particle.EXPLOSION_EMITTER, source, 40, 7, 7, 7, 0, null, true);
+					
+					sphereAround(source, power).forEach(block -> block.setType(Material.AIR));
+					world.createExplosion(source, power*0.8f, true, true, player);
+					
+					remove();
+					cancel();
+					return;
+				}
+				
+				scale -= (initialScale/interpolationDurationExplosion+1);
+				tickTime++;
 			}
-		}.runTaskLater(EpicMagics.INSTANCE, interpolationDurationExplosion);
+		}.runTaskTimer(EpicMagics.INSTANCE, 0, 1);
 	}
 
 	public static Set<Block> sphereAround(Location location, int radius) {

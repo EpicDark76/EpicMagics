@@ -23,7 +23,7 @@ public abstract class AnimatedRangedMagicSpell extends RangedMagicSpell {
 	}
 
 	@Override
-	protected boolean atTarget(Player player, Location target) {
+	protected boolean handle(Player player, Location target) {
 		World world = player.getWorld();
 		Location location = player.getEyeLocation();
 		
@@ -42,7 +42,7 @@ public abstract class AnimatedRangedMagicSpell extends RangedMagicSpell {
 					// Cancel the task when all steps are completed
 					this.cancel();
 					// do action at target location when particle curve hits
-					action(target);
+					handleImpact(target);
 					return;
 				}
 
@@ -63,7 +63,7 @@ public abstract class AnimatedRangedMagicSpell extends RangedMagicSpell {
 		return true;
 	}
 
-	protected abstract boolean action(Location target);
+	protected abstract boolean handleImpact(Location target);
 
 	// Method to get a consistent control point for the entire curve with a random
 	// direction

@@ -14,7 +14,7 @@ public abstract class MobSpell extends AnimatedRangedMagicSpell {
 	public abstract LivingEntity createEntity(Location location);
 
 	@Override
-	protected boolean action(Location target) {
+	protected boolean handleImpact(Location target) {
 		target.getWorld().spawnParticle(Particle.EXPLOSION, target, 20, 1, 1, 1, 0.1, null, true);
 		LivingEntity entity = createEntity(target);
 		return entity != null;
