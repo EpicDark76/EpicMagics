@@ -4,7 +4,6 @@ import org.bukkit.HeightMap;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -22,7 +21,7 @@ public class OrbitalStrikeSpell extends RangedMagicSpell {
 	
 	@Override
 	protected void playCastingSound(Player player) {
-		player.getWorld().playSound(player.getLocation(), Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, SoundCategory.AMBIENT, 1, 1);
+		player.getWorld().playSound(player.getLocation(), Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, castingCategory, 1, 1);
 	}
 
 	@Override

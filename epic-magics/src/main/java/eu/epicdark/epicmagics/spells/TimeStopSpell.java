@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -22,7 +21,7 @@ public class TimeStopSpell extends MagicSpell{
 	
 	@Override
 	protected void playCastingSound(Player player) {
-		player.getWorld().playSound(player.getLocation(), Sound.BLOCK_RESPAWN_ANCHOR_DEPLETE, SoundCategory.AMBIENT, 1, 0.5f);
+		player.getWorld().playSound(player.getLocation(), Sound.BLOCK_RESPAWN_ANCHOR_DEPLETE, castingCategory, 1, 0.5f);
 	}
 
 	@Override

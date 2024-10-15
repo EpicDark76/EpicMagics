@@ -12,11 +12,16 @@ import org.bukkit.entity.Player;
 public abstract class MagicSpell {
 	private static final HashSet<MagicSpell> SPELLS = new HashSet<MagicSpell>();
 	
+	protected static final SoundCategory castingCategory = SoundCategory.AMBIENT;
+	
 	public static final MagicSpell LIGHTNING = new LightningSpell(),
 									ORBITAL_STRIKE = new OrbitalStrikeSpell(),
 									TIME_STOP = new TimeStopSpell(),
 									ZOMBIE = new ZombieSpell(),
-									SHIELD = new ShieldSpell();
+									SHIELD = new ShieldSpell(),
+									CREEPER = new CreeperSpell(),
+									FIREBALL = new FireballSpell(),
+									WITHER_SKULL = new WitherskullSpell();
 	
 	private final Material material;
 	private final int cost;
@@ -58,7 +63,7 @@ public abstract class MagicSpell {
 	}
 	
 	protected void playCastingSound(Player player) {
-		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ILLUSIONER_CAST_SPELL, SoundCategory.AMBIENT, 1, 1);
+		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ILLUSIONER_CAST_SPELL, castingCategory, 1, 1);
 	}
 	
 	protected static int seconds(int seconds) {
