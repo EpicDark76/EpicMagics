@@ -1,13 +1,14 @@
 package eu.epicdark.epicmagics.crafting.cauldron;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
@@ -15,7 +16,6 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import com.google.common.base.Preconditions;
@@ -24,33 +24,42 @@ import eu.epicdark.epicmagics.EpicMagics;
 import eu.epicdark.epicmagics.utils.CauldronData;
 
 public class CauldronRecipe implements Recipe, Keyed{
-	private static final Set<CauldronRecipe> RECIPES = new HashSet<>();
+	private static final HashMap<NamespacedKey, CauldronRecipe> RECIPES = new HashMap<>();
 	private static BukkitTask TASK;
 	
 	private final NamespacedKey key;
     private final ItemStack output;
-    private final boolean reqiresWater;
+    private final boolean reqireWater;
+    private final boolean requireLava;
+    private final int minFluidLevel;
+    private final boolean requireCampfire;
+    private final boolean requireSoulCampfire;
+    private final boolean requireLitCampfire;
 	
     protected CauldronRecipe(@NotNull NamespacedKey key, @NotNull ItemStack result) {
-		this(key, result, false);
+		this(key, result, false, false, 0, false, false, false);
 	}
     
-	protected CauldronRecipe(@NotNull NamespacedKey key, @NotNull ItemStack result, @NotNull boolean requiresWater) {
+	protected CauldronRecipe(@NotNull NamespacedKey key, @NotNull ItemStack result, @NotNull boolean requireWater, boolean requireLava, int fluidLevel, boolean requireCampfire, boolean requireSoulCampfire, boolean requireLitCampfire) {
 		Preconditions.checkArgument(key != null, "key cannot be null");
+		Preconditions.checkArgument(!RECIPES.containsKey(key), "key already in use");
+		Preconditions.checkArgument(0 >= fluidLevel && fluidLevel >= 3, "fluidLevel must be defined in [0;3]");
 		this.key = key;
 		this.output = new ItemStack(result);
-		this.reqiresWater = requiresWater;
+		this.reqireWater = requireWater;
+		this.requireLava = requireLava;
+		this.minFluidLevel = fluidLevel;
+		this.requireCampfire = requireCampfire;
+		this.requireSoulCampfire = requireSoulCampfire;
+		this.requireLitCampfire = requireLitCampfire;
 		
-		Block block = Bukkit.getWorlds().get(0).getBlockAt(252, 71, 633);
-		CauldronData data = new CauldronData(block);
-		EpicMagics.INSTANCE.getLogger().info("level: " + data.getLevel());
-		
-		RECIPES.add(this);
+		RECIPES.put(key, this);
 		
 		if(TASK == null) {
 			EpicMagics.INSTANCE.getLogger().info("Starting cauldron task...");
 			TASK = new BukkitRunnable() {
 				
+				@SuppressWarnings("unchecked")
 				@Override
 				public void run() {
 					
@@ -62,8 +71,9 @@ public class CauldronRecipe implements Recipe, Keyed{
 						if(items.isEmpty()) {
 							continue;
 						}
+						//remove despawned or picked up items from list
 						items.forEach(item -> {
-							if(item == null) {
+							if(item == null || item.getItemStack() == null) {
 								EpicMagics.INSTANCE.getLogger().info("Removing item from list");
 								items.remove(item);
 							}
@@ -74,24 +84,26 @@ public class CauldronRecipe implements Recipe, Keyed{
 						for(ShapelessCauldronRecipe recipe : ShapelessCauldronRecipe.getShapelessRecipes()) {
 							
 							List<Item> craftingItems = new ArrayList<>();
-							boolean selected = true;
+							ArrayList<Item> cloned = (ArrayList<Item>) items.clone();
+							int success = 0;
 							for(RecipeChoice choice : recipe.getIngredients()) {
-								boolean accept = true;
-								for(Item item : items) {
-									if(!choice.test(item.getItemStack())) {
-										accept = false;
-									}else {
-										craftingItems.add(item);
+								for(int i = 0; i < cloned.size(); i++) {
+									Item item = cloned.get(i);
+									if(item == null || item.getItemStack().isEmpty()) {
+										continue;
+									}
+									if(choice.test(item.getItemStack())) {
+										success++;
+										//remove item from list to prevent it being counted as another possible ingredient for recipe
+										item.setItemStack(new ItemStack(Material.AIR));
+										cloned.set(i, item);
 										continue;
 									}
 								}
-								
-								if(!accept) {
-									selected = false;
-								}
 							}
 							
-							if(selected) {
+							if(success >= recipe.getIngredients().size()) {
+								block.getWorld().playSound(block.getLocation(), Sound.ENTITY_WITHER_DEATH, SoundCategory.BLOCKS, 1, 1);
 								block.getWorld().dropItem(block.getLocation().toCenterLocation(), recipe.getResult());
 								craftingItems.forEach(item -> item.remove());
 								return;
@@ -129,10 +141,30 @@ public class CauldronRecipe implements Recipe, Keyed{
      * @return The result boolean.
      */
     public boolean requiresWater() {
-    	return reqiresWater;
+    	return reqireWater;
     }
     
-    public static Set<CauldronRecipe> getRecipes() {
+    public boolean requiresLava() {
+    	return requireLava;
+    }
+    
+    public int requiredFluidLevel() {
+    	return minFluidLevel;
+    }
+    
+    public boolean requiresCampfire() {
+    	return requireCampfire;
+    }
+    
+    public boolean requiresSoulCampfire() {
+    	return requireSoulCampfire;
+    }
+    
+    public boolean requiresLitCampfire() {
+    	return requireLitCampfire;
+    }
+    
+    public static HashMap<NamespacedKey, CauldronRecipe> getRecipes() {
 		return RECIPES;
     }
 	
@@ -145,7 +177,6 @@ public class CauldronRecipe implements Recipe, Keyed{
      * @throws IllegalArgumentException if the {@code result} is an empty item
      * (AIR)
      */
-    @ApiStatus.Internal
     @NotNull
     protected static ItemStack checkResult(@NotNull ItemStack result) {
         Preconditions.checkArgument(!result.isEmpty(), "Recipe cannot have an empty result."); // Paper
