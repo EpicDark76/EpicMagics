@@ -22,7 +22,9 @@ public abstract class MagicSpell {
 									CREEPER = new CreeperSpell(),
 									FIREBALL = new FireballSpell(),
 									WITHER_SKULL = new WitherskullSpell(),
-									SKELETON = new SkeletonSpell();
+									SKELETON = new SkeletonSpell(),
+									SONIC_STRIKE = new SonicStrikeSpell(),
+									TNT = new TntSpell();
 	
 	private final Material material;
 	private final int cost;
