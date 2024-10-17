@@ -1,6 +1,7 @@
 package eu.epicdark.epicmagics.crafting.cauldron;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,7 @@ import eu.epicdark.epicmagics.utils.CauldronData;
 import eu.epicdark.epicmagics.utils.EpicUtils;
 
 public class CauldronRecipe implements Recipe, Keyed{
+	public static final NamespacedKey TYPE = new NamespacedKey(EpicMagics.INSTANCE, "cauldron");
 	
 	private static final HashMap<NamespacedKey, CauldronRecipe> RECIPES = new HashMap<>();
 	private static BukkitTask TASK;
@@ -45,10 +47,6 @@ public class CauldronRecipe implements Recipe, Keyed{
     
     private final Set<RecipeChoice> ingredients;
     
-    public CauldronRecipe(@NotNull NamespacedKey key, @NotNull ItemStack result) {
-    	this(key, result, false, false, 0, false, false, false, new RecipeChoice[] {});
-    }
-    
     public CauldronRecipe(@NotNull NamespacedKey key, @NotNull ItemStack result, RecipeChoice...choices) {
     	this(key, result, false, false, 0, false, false, false, choices);
     }
@@ -58,6 +56,17 @@ public class CauldronRecipe implements Recipe, Keyed{
 		Preconditions.checkArgument(!RECIPES.containsKey(key), "key already in use");
 		Preconditions.checkArgument(!result.isEmpty(), "Recipe cannot have an empty result.");
 		Preconditions.checkArgument(minFluidLevel >= 0 && minFluidLevel <= 3, "minFluidLevel must be defined in [0;3], but is " + minFluidLevel);
+		
+		//check if ingredients pool is already in use
+		if(!RECIPES.isEmpty()) {
+			List<RecipeChoice> ch = Arrays.asList(choices);
+			for(CauldronRecipe recipe : RECIPES.values()) {
+				if(recipe.getIngredients().containsAll(ch) || ch.containsAll(recipe.getIngredients())) {
+					throw new IllegalArgumentException("ingredient pool is already used by " + recipe.getKey().asString());
+				}
+			}
+		}
+		
 		this.key = key;
 		this.output = new ItemStack(result);
 		this.requiresWater = requiresWater;
@@ -75,11 +84,6 @@ public class CauldronRecipe implements Recipe, Keyed{
 		if(TASK == null) {
 			startTask();
 		}
-    }
-    
-    public CauldronRecipe addIngredient(RecipeChoice choice) {
-    	this.ingredients.add(choice);
-    	return this;
     }
 
 	@Override
