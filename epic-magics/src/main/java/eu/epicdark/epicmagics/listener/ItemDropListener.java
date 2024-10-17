@@ -7,7 +7,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -51,11 +50,6 @@ public class ItemDropListener implements Listener{
 		if(!CauldronRecipe.isInRecipe(stack)) {
 			return;
 		}
-		
-	}
-	
-	@EventHandler
-	public void onItemDespawn(ItemDespawnEvent event) {
 		
 	}
 
