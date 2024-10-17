@@ -28,7 +28,10 @@ public class ShapelessCauldronRecipe extends CauldronRecipe{
 		return ingredients;
 	}
 	
-	
+	@Override
+    public String toString() {
+    	return "ShapelessCauldronRecipe[key=" + this.getKey().asString() + ", result=" + this.output.toString() + ", water=" + requiresWater + ", lava=" + requiresLava + ", ingredients=" + ingredients.toString() + "]";
+    }
 	
 	
 	public static Set<ShapelessCauldronRecipe> getShapelessRecipes() {

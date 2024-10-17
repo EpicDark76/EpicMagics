@@ -14,10 +14,11 @@ public class CauldronData {
 	private static final HashMap<Block, ArrayList<Item>> ITEMS = new HashMap<>();
 	
 	private final Block block;
+	private final Block blockBelow;
 	
 	private final boolean hasCampfire;
 	private final boolean hasSoulCampfire;
-	private final boolean isLit;
+	private final boolean isLit; //this won't check in recipe process if blockBelow is campfire, only if a campfire is lit if there is any
 	
 	private final boolean hasWater;
 	private final boolean hasLava;
@@ -30,7 +31,7 @@ public class CauldronData {
 		}
 		this.block = block;
 		
-		final Block blockBelow = block.getLocation().subtract(0, 1, 0).getBlock();
+		blockBelow = block.getLocation().subtract(0, 1, 0).getBlock();
 		this.hasCampfire = blockBelow.getType().equals(Material.CAMPFIRE);
         this.hasSoulCampfire = !hasCampfire && blockBelow.getType().equals(Material.SOUL_CAMPFIRE);
         
@@ -88,6 +89,10 @@ public class CauldronData {
 	
 	public boolean isEmpty() {
 		return !hasLava && !hasWater && level == 0;
+	}
+	
+	public Block getBlockBelow() {
+		return blockBelow;
 	}
 	
 	
