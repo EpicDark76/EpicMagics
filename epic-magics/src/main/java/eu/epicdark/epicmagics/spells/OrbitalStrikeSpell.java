@@ -34,7 +34,7 @@ public class OrbitalStrikeSpell extends RangedMagicSpell {
 		}
 		
 		location = location.toHighestLocation(HeightMap.MOTION_BLOCKING);
-		final Laser laser = new Laser(location, player);
+		new Laser(location, player);
 		return true;
 	}
 

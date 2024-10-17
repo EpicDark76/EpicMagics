@@ -8,7 +8,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.Levelled;
 import org.bukkit.block.data.type.Campfire;
 import org.bukkit.entity.Item;
-import org.bukkit.inventory.ItemStack;
 
 public class CauldronData {
 	private static final HashMap<Block, ArrayList<Item>> ITEMS = new HashMap<>();
@@ -61,6 +60,10 @@ public class CauldronData {
         	hasLava = false;
         }
         
+	}
+	
+	public Block getBlock() {
+		return block;
 	}
 
 	public boolean hasCampfire() {

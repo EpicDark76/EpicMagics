@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ItemDespawnEvent;
@@ -14,14 +13,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import eu.epicdark.epicmagics.EpicMagics;
-import eu.epicdark.epicmagics.crafting.cauldron.CauldronRecipeNew;
+import eu.epicdark.epicmagics.crafting.cauldron.CauldronRecipe;
 import eu.epicdark.epicmagics.utils.CauldronData;
 
 public class ItemDropListener implements Listener{
 	
 	@EventHandler
 	public void onCauldron(PlayerDropItemEvent event) {
-		Player player = event.getPlayer();
 		Item item = event.getItemDrop();
 		ItemStack stack = item.getItemStack();
 		
@@ -47,10 +45,10 @@ public class ItemDropListener implements Listener{
 			}
 		}.runTaskTimer(EpicMagics.INSTANCE, 0, 5);
 		
-		if(CauldronRecipeNew.getRecipes().isEmpty()) {
+		if(CauldronRecipe.getRecipes().isEmpty()) {
 			return;
 		}
-		if(!CauldronRecipeNew.isInRecipe(stack)) {
+		if(!CauldronRecipe.isInRecipe(stack)) {
 			return;
 		}
 		
