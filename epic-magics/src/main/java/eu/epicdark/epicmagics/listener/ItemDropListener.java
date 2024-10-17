@@ -14,8 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import eu.epicdark.epicmagics.EpicMagics;
-import eu.epicdark.epicmagics.crafting.cauldron.CauldronRecipe;
-import eu.epicdark.epicmagics.crafting.cauldron.ShapelessCauldronRecipe;
+import eu.epicdark.epicmagics.crafting.cauldron.CauldronRecipeNew;
 import eu.epicdark.epicmagics.utils.CauldronData;
 
 public class ItemDropListener implements Listener{
@@ -48,10 +47,10 @@ public class ItemDropListener implements Listener{
 			}
 		}.runTaskTimer(EpicMagics.INSTANCE, 0, 5);
 		
-		if(CauldronRecipe.getRecipes().isEmpty()) {
+		if(CauldronRecipeNew.getRecipes().isEmpty()) {
 			return;
 		}
-		if(!ShapelessCauldronRecipe.isInRecipe(stack)) {
+		if(!CauldronRecipeNew.isInRecipe(stack)) {
 			return;
 		}
 		
