@@ -13,6 +13,7 @@ import eu.epicdark.epicmagics.commands.MagicstickCommand;
 import eu.epicdark.epicmagics.crafting.cauldron.CauldronRecipe;
 import eu.epicdark.epicmagics.listener.InteractListener;
 import eu.epicdark.epicmagics.listener.ItemDropListener;
+import eu.epicdark.epicmagics.listener.PlayerListener;
 import eu.epicdark.epicmagics.utils.ItemBuilder;
 import net.kyori.adventure.text.Component;
 
@@ -27,7 +28,7 @@ public class EpicMagics extends JavaPlugin{
 		
 		MAGICSTICK = new ItemBuilder(Material.STICK).enchantmentGlint(true).itemName(Component.text("Zauberstab")).rarity(ItemRarity.EPIC).maxStackSize(1).build();
 		
-		new CauldronRecipe(new NamespacedKey(this, "magicstick"), MAGICSTICK).addIngredient(new RecipeChoice.MaterialChoice(Material.STICK)).addIngredient(new RecipeChoice.MaterialChoice(Material.EMERALD));
+		new CauldronRecipe(new NamespacedKey(this, "magicstick"), MAGICSTICK, new RecipeChoice.MaterialChoice(Material.STICK), new RecipeChoice.MaterialChoice(Material.EMERALD));
 		
 		registerListeners();
 		registerCommands();
@@ -45,6 +46,7 @@ public class EpicMagics extends JavaPlugin{
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new InteractListener(), this);
 		pm.registerEvents(new ItemDropListener(), this);
+		pm.registerEvents(new PlayerListener(), this);
 	}
 	
 	private void registerCommands() {
