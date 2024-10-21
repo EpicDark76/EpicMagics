@@ -150,7 +150,7 @@ public class Laser implements OrbitalLaser{
 					
 					world.spawnParticle(Particle.EXPLOSION_EMITTER, source, 40, 7, 7, 7, 0, null, true);
 					
-					BlockUtils.sphereAround(source, power).forEach(block -> block.setType(Material.AIR));
+					BlockUtils.surroundingBlocks(source, power, true).forEach(block -> block.setType(Material.AIR));
 					world.createExplosion(source, power*0.8f, true, true, player);
 					
 					remove();

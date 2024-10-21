@@ -214,6 +214,9 @@ public class CauldronRecipe implements Recipe, Keyed{
 	}
 	
 	public static boolean isInRecipe(ItemStack item) {
+		if(RECIPES.isEmpty()) {
+			return false;
+		}
 		for(CauldronRecipe recipe : RECIPES.values()) {
 			Set<RecipeChoice> ingredients = recipe.getIngredients();
 			for(RecipeChoice ingredient : ingredients) {
